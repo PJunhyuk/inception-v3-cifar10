@@ -394,7 +394,7 @@ def main(_):
         num_ps_tasks=FLAGS.num_ps_tasks)
 
     # Create global_step
-    with tf.device('/cpu:0'):
+    with tf.device(deploy_config.variables_device()):
       global_step = slim.create_global_step()
 
     ######################
@@ -423,7 +423,7 @@ def main(_):
     ##############################################################
     # Create a dataset provider that loads data from the dataset #
     ##############################################################
-    with tf.device('/cpu:0'):
+    with tf.device(deploy_config.inputs_device()):
       provider = slim.dataset_data_provider.DatasetDataProvider(
           dataset,
           num_readers=FLAGS.num_readers,
@@ -504,7 +504,7 @@ def main(_):
     #########################################
     # Configure the optimization procedure. #
     #########################################
-    with tf.device('/cpu:0'):
+    with tf.device(deploy_config.optimizer_device()):
       learning_rate = _configure_learning_rate(dataset.num_samples, global_step)
       optimizer = _configure_optimizer(learning_rate)
       summaries.add(tf.summary.scalar('learning_rate', learning_rate))

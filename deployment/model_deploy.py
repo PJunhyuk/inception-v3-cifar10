@@ -187,7 +187,7 @@ def create_clones(config, model_fn, args=None, kwargs=None):
     for i in range(0, config.num_clones):
       with tf.name_scope(config.clone_scope(i)) as clone_scope:
         clone_device = config.clone_device(i)
-        with tf.device('/cpu:0'):
+        with tf.device(clone_device):
           with tf.variable_scope(tf.get_variable_scope(),
                                  reuse=True if i > 0 else None):
             outputs = model_fn(*args, **kwargs)
@@ -213,7 +213,7 @@ def _gather_clone_loss(clone, num_clones, regularization_losses):
   clone_loss = None
   regularization_loss = None
   # Compute and aggregate losses on the clone device.
-  with tf.device('/cpu:0'):
+  with tf.device(clone.device):
     all_losses = []
     clone_losses = tf.get_collection(tf.GraphKeys.LOSSES, clone.scope)
     if clone_losses:
@@ -259,7 +259,7 @@ def _optimize_clone(optimizer, clone, num_clones, regularization_losses,
   sum_loss = _gather_clone_loss(clone, num_clones, regularization_losses)
   clone_grad = None
   if sum_loss is not None:
-    with tf.device('/cpu:0'):
+    with tf.device(clone.device):
       clone_grad = optimizer.compute_gradients(sum_loss, **kwargs)
   return sum_loss, clone_grad
 
@@ -358,10 +358,10 @@ def deploy(config,
 
   train_op = None
   total_loss = None
-  with tf.device('/cpu:0'):
+  with tf.device(config.optimizer_device()):
     if optimizer:
       # Place the global step on the device storing the variables.
-      with tf.device('/cpu:0'):
+      with tf.device(config.variables_device()):
         global_step = slim.get_or_create_global_step()
 
       # Compute the gradients for the clones.

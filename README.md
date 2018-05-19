@@ -5,7 +5,7 @@
 ```
 
 ```
-> python train_image_classifier.py --train_dir=/tmp/train_logs --dataset_name=cifar10 --dataset_split_name=train --dataset_dir=/tmp/data/cifar10 --model_name=inception_v3
+> python train_image_classifier.py --train_dir=/tmp/train_logs --dataset_name=cifar10 --dataset_split_name=train --dataset_dir=/tmp/data/cifar10 --model_name=inception_v3 --clone_on_cpu=True
 ```
 
 ```
