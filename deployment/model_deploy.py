@@ -141,43 +141,43 @@ _deployment_params = {'num_clones': 1,
 
 
 def create_clones(config, model_fn, args=None, kwargs=None):
-  """Creates multiple clones according to config using a `model_fn`.
-
-  The returned values of `model_fn(*args, **kwargs)` are collected along with
-  the scope and device used to created it in a namedtuple
-  `Clone(outputs, scope, device)`
-
-  Note: it is assumed that any loss created by `model_fn` is collected at
-  the tf.GraphKeys.LOSSES collection.
-
-  To recover the losses, summaries or update_ops created by the clone use:
-  ```python
-    losses = tf.get_collection(tf.GraphKeys.LOSSES, clone.scope)
-    summaries = tf.get_collection(tf.GraphKeys.SUMMARIES, clone.scope)
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, clone.scope)
-  ```
-
-  The deployment options are specified by the config object and support
-  deploying one or several clones on different GPUs and one or several replicas
-  of such clones.
-
-  The argument `model_fn` is called `config.num_clones` times to create the
-  model clones as `model_fn(*args, **kwargs)`.
-
-  If `config` specifies deployment on multiple replicas then the default
-  tensorflow device is set appropriatly for each call to `model_fn` and for the
-  slim variable creation functions: model and global variables will be created
-  on the `ps` device, the clone operations will be on the `worker` device.
-
-  Args:
-    config: A DeploymentConfig object.
-    model_fn: A callable. Called as `model_fn(*args, **kwargs)`
-    args: Optional list of arguments to pass to `model_fn`.
-    kwargs: Optional list of keyword arguments to pass to `model_fn`.
-
-  Returns:
-    A list of namedtuples `Clone`.
-  """
+  # """Creates multiple clones according to config using a `model_fn`.
+  #
+  # The returned values of `model_fn(*args, **kwargs)` are collected along with
+  # the scope and device used to created it in a namedtuple
+  # `Clone(outputs, scope, device)`
+  #
+  # Note: it is assumed that any loss created by `model_fn` is collected at
+  # the tf.GraphKeys.LOSSES collection.
+  #
+  # To recover the losses, summaries or update_ops created by the clone use:
+  # ```python
+  #   losses = tf.get_collection(tf.GraphKeys.LOSSES, clone.scope)
+  #   summaries = tf.get_collection(tf.GraphKeys.SUMMARIES, clone.scope)
+  #   update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS, clone.scope)
+  # ```
+  #
+  # The deployment options are specified by the config object and support
+  # deploying one or several clones on different GPUs and one or several replicas
+  # of such clones.
+  #
+  # The argument `model_fn` is called `config.num_clones` times to create the
+  # model clones as `model_fn(*args, **kwargs)`.
+  #
+  # If `config` specifies deployment on multiple replicas then the default
+  # tensorflow device is set appropriatly for each call to `model_fn` and for the
+  # slim variable creation functions: model and global variables will be created
+  # on the `ps` device, the clone operations will be on the `worker` device.
+  #
+  # Args:
+  #   config: A DeploymentConfig object.
+  #   model_fn: A callable. Called as `model_fn(*args, **kwargs)`
+  #   args: Optional list of arguments to pass to `model_fn`.
+  #   kwargs: Optional list of keyword arguments to pass to `model_fn`.
+  #
+  # Returns:
+  #   A list of namedtuples `Clone`.
+  # """
   clones = []
   args = args or []
   kwargs = kwargs or {}
@@ -187,7 +187,7 @@ def create_clones(config, model_fn, args=None, kwargs=None):
     for i in range(0, config.num_clones):
       with tf.name_scope(config.clone_scope(i)) as clone_scope:
         clone_device = config.clone_device(i)
-        with tf.device(clone_device):
+        with tf.device('/cpu:0'):
           with tf.variable_scope(tf.get_variable_scope(),
                                  reuse=True if i > 0 else None):
             outputs = model_fn(*args, **kwargs)
@@ -213,7 +213,7 @@ def _gather_clone_loss(clone, num_clones, regularization_losses):
   clone_loss = None
   regularization_loss = None
   # Compute and aggregate losses on the clone device.
-  with tf.device(clone.device):
+  with tf.device('/cpu:0'):
     all_losses = []
     clone_losses = tf.get_collection(tf.GraphKeys.LOSSES, clone.scope)
     if clone_losses:
@@ -259,7 +259,7 @@ def _optimize_clone(optimizer, clone, num_clones, regularization_losses,
   sum_loss = _gather_clone_loss(clone, num_clones, regularization_losses)
   clone_grad = None
   if sum_loss is not None:
-    with tf.device(clone.device):
+    with tf.device('/cpu:0'):
       clone_grad = optimizer.compute_gradients(sum_loss, **kwargs)
   return sum_loss, clone_grad
 
@@ -358,10 +358,10 @@ def deploy(config,
 
   train_op = None
   total_loss = None
-  with tf.device(config.optimizer_device()):
+  with tf.device('/cpu:0'):
     if optimizer:
       # Place the global step on the device storing the variables.
-      with tf.device(config.variables_device()):
+      with tf.device('/cpu:0'):
         global_step = slim.get_or_create_global_step()
 
       # Compute the gradients for the clones.
