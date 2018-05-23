@@ -17,51 +17,9 @@ py_library(
     ],
 )
 
-sh_binary(
-    name = "download_and_convert_imagenet",
-    srcs = ["datasets/download_and_convert_imagenet.sh"],
-    data = [
-        "datasets/download_imagenet.sh",
-        "datasets/imagenet_2012_validation_synset_labels.txt",
-        "datasets/imagenet_lsvrc_2015_synsets.txt",
-        "datasets/imagenet_metadata.txt",
-        "datasets/preprocess_imagenet_validation_data.py",
-        "datasets/process_bounding_boxes.py",
-        ":build_imagenet_data",
-    ],
-)
-
-py_binary(
-    name = "build_imagenet_data",
-    srcs = ["datasets/build_imagenet_data.py"],
-    deps = [
-        # "//numpy",
-        # "//tensorflow",
-    ],
-)
-
 py_library(
     name = "download_and_convert_cifar10",
     srcs = ["datasets/download_and_convert_cifar10.py"],
-    deps = [
-        ":dataset_utils",
-        # "//numpy",
-        # "//tensorflow",
-    ],
-)
-
-py_library(
-    name = "download_and_convert_flowers",
-    srcs = ["datasets/download_and_convert_flowers.py"],
-    deps = [
-        ":dataset_utils",
-        # "//tensorflow",
-    ],
-)
-
-py_library(
-    name = "download_and_convert_mnist",
-    srcs = ["datasets/download_and_convert_mnist.py"],
     deps = [
         ":dataset_utils",
         # "//numpy",
@@ -74,8 +32,6 @@ py_binary(
     srcs = ["download_and_convert_data.py"],
     deps = [
         ":download_and_convert_cifar10",
-        ":download_and_convert_flowers",
-        ":download_and_convert_mnist",
         # "//tensorflow",
     ],
 )
@@ -89,41 +45,11 @@ py_binary(
     ],
 )
 
-py_binary(
-    name = "flowers",
-    srcs = ["datasets/flowers.py"],
-    deps = [
-        ":dataset_utils",
-        # "//tensorflow",
-    ],
-)
-
-py_binary(
-    name = "imagenet",
-    srcs = ["datasets/imagenet.py"],
-    deps = [
-        ":dataset_utils",
-        # "//tensorflow",
-    ],
-)
-
-py_binary(
-    name = "mnist",
-    srcs = ["datasets/mnist.py"],
-    deps = [
-        ":dataset_utils",
-        # "//tensorflow",
-    ],
-)
-
 py_library(
     name = "dataset_factory",
     srcs = ["datasets/dataset_factory.py"],
     deps = [
         ":cifar10",
-        ":flowers",
-        ":imagenet",
-        ":mnist",
     ],
 )
 
