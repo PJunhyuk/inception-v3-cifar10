@@ -21,14 +21,16 @@ import functools
 
 import tensorflow as tf
 
-from nets import inception
-
 slim = tf.contrib.slim
 
-networks_map = {'inception_v3': inception.inception_v3}
+# pylint: disable=unused-import
+from nets.inception_v3 import inception_v3
+from nets.inception_v3 import inception_v3_arg_scope
+from nets.inception_v3 import inception_v3_base
+# pylint: enable=unused-import
 
-arg_scopes_map = {'inception_v3': inception.inception_v3_arg_scope}
-
+networks_map = {'inception_v3': inception_v3}
+arg_scopes_map = {'inception_v3': inception_v3_arg_scope}
 
 def get_network_fn(name, num_classes, weight_decay=0.0, is_training=False):
   """Returns a network_fn such as `logits, end_points = network_fn(images)`.
