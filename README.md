@@ -107,7 +107,8 @@ A lightweight high-level API of TensorFlow for defining, training and evaluating
 
 Resize image size from 32x32x3 -> 299x299x3.  
 
-#### Network structure
+#### Network structure  
+
 | type | patch size/stride | input size |
 |:-:|:-:|:-:|:-:|
 | conv        | 3x3/2 | 299x299x3  |
