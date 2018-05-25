@@ -1,5 +1,7 @@
 # inception-cifar10-rotate
 
+Based on [TensorFlow-Slim](https://github.com/tensorflow/models/tree/master/research/slim).  
+
 ## Install
 
 #### Pull Docker image
@@ -94,3 +96,40 @@ $ scp -r {user-name}@{server-ip}:{server-directory} .
 ###### inception_v3 - train (26583 steps)
 - eval/Accuracy[0.7976]  
 - eval/Recall_5[0.9904]  
+
+## Descriptions
+#### Tensorflow-slim
+A lightweight high-level API of TensorFlow for defining, training and evaluating complex models.  
+[TensorFlow-Slim](https://github.com/tensorflow/models/tree/master/research/slim).  
+
+#### Image Resize
+<img src="/src/src_1.PNG" width="600">  
+
+Resize image size from 32x32x3 -> 299x299x3.  
+
+#### Network structure
+<img src="/src/src_2.png" width="300">  
+
+| type | patch size/stride | input size |
+|:-:|:-:|:-:|:-:|
+| conv        | 3x3/2 | 299x299x3  |
+| conv        | 3x3/1 | 149x149x32 |
+| conv padded | 3x3/1 | 147x147x32 |
+| pool        | 3x3/2 | 147x147x64 |
+| conv        | 3x3/1 | 73x73x64   |
+| conv        | 3x3/2 | 71x71x80   |
+| conv        | 3x3/1 | 35x35x192  |
+| 3xInception | -     | 35x35x288  |
+| 5xInception | -     | 17x17x768  |
+| 2xInception | -     | 8x8x1280   |
+| pool        | 8x8   | 8x8x2048   |
+| linear      | logits| 1x1x2048   |
+| softmax     | classifier | 1x1x1000 |
+
+> You can check more detail descriptions in paper - [Rethinking the Inception Architecture for Computer Vision](https://arxiv.org/abs/1512.00567).
+
+You can check codes in [inception_v3.py](https://github.com/PJunhyuk/inception-cifar10-rotate/blob/master/nets/inception_v3.py).  
+
+- `padding` in `slim.arg_scope` can get `VALID` or `SAME`(default). [difference between 'SAME' and 'VALID'](https://stackoverflow.com/questions/37674306/what-is-the-difference-between-same-and-valid-padding-in-tf-nn-max-pool-of-t).
+- Each Inception blocks has several branches, and it combined for net by using `tf.concat` function. Depth of net(combined) is sum of all branches' depth.
+  - ex) In `Mixed_5b`, `256 = 64 + 48 + 96 + 32`.
