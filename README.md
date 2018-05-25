@@ -108,8 +108,6 @@ A lightweight high-level API of TensorFlow for defining, training and evaluating
 Resize image size from 32x32x3 -> 299x299x3.  
 
 #### Network structure
-<img src="/src/src_2.png" width="300">  
-
 | type | patch size/stride | input size |
 |:-:|:-:|:-:|:-:|
 | conv        | 3x3/2 | 299x299x3  |
@@ -125,6 +123,8 @@ Resize image size from 32x32x3 -> 299x299x3.
 | pool        | 8x8   | 8x8x2048   |
 | linear      | logits| 1x1x2048   |
 | softmax     | classifier | 1x1x1000 |
+
+<img src="/src/src_2.png" width="300">  
 
 > You can check more detail descriptions in paper - [Rethinking the Inception Architecture for Computer Vision](https://arxiv.org/abs/1512.00567).
 
