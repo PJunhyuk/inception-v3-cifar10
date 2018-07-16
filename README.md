@@ -1,4 +1,4 @@
-# inception-cifar10-rotate
+# inception-v3-cifar10
 
 Based on [TensorFlow-Slim](https://github.com/tensorflow/models/tree/master/research/slim).  
 
@@ -14,24 +14,24 @@ $ docker run -it --name {docker-name} tensorflow/tensorflow:1.7.0-py3 /bin/bash
 ```
 ~# apt-get update
 ~# apt-get install git
-~# git clone https://github.com/PJunhyuk/inception-cifar10-rotate
+~# git clone https://github.com/PJunhyuk/inception-v3-cifar10
 ```
 
 #### Download dataset
 ```
-~/inception-cifar10-rotate# python download_and_convert_data.py --dataset_name=cifar10 --dataset_dir="/tmp/data/cifar10"
+~/inception-v3-cifar10# python download_and_convert_data.py --dataset_name=cifar10 --dataset_dir="/tmp/data/cifar10"
 ```
 
 ## Usage
 
 #### Train
 ```
-~/inception-cifar10-rotate# python train_image_classifier.py --train_dir=/tmp/models/inception_v3 --dataset_name=cifar10 --dataset_split_name=train --dataset_dir=/tmp/data/cifar10 --model_name=inception_v3 --clone_on_cpu=True
+~/inception-v3-cifar10# python train_image_classifier.py --train_dir=/tmp/models/inception_v3 --dataset_name=cifar10 --dataset_split_name=train --dataset_dir=/tmp/data/cifar10 --model_name=inception_v3 --clone_on_cpu=True
 ```
 
 #### Evaluate
 ```
-~/inception-cifar10-rotate# python eval_image_classifier.py --alsologtostderr -checkpoint_path=/tmp/models/inception_v3/model.ckpt-14457 --dataset_dir=/tmp/data/cifar10 --dataset_name=cifar10 --dataset_split_name=test --model_name=inception_v3 --clone_on_cpu=True
+~/inception-v3-cifar10# python eval_image_classifier.py --alsologtostderr -checkpoint_path=/tmp/models/inception_v3/model.ckpt-14457 --dataset_dir=/tmp/data/cifar10 --dataset_name=cifar10 --dataset_split_name=test --model_name=inception_v3 --clone_on_cpu=True
 ```
 
 #### Download&Unzip pre-trained model
@@ -151,3 +151,6 @@ You can check codes in [inception_v3.py](https://github.com/PJunhyuk/inception-c
 - `padding` in `slim.arg_scope` can get `VALID` or `SAME`(default). [difference between 'SAME' and 'VALID'](https://stackoverflow.com/questions/37674306/what-is-the-difference-between-same-and-valid-padding-in-tf-nn-max-pool-of-t).
 - Each Inception blocks has several branches, and it combined for net by using `tf.concat` function. Depth of net(combined) is sum of all branches' depth.
   - ex) In `Mixed_5b`, `256 = 64 + 48 + 96 + 32`.
+
+## LICENCE
+[Apache License 2.0](https://github.com/PJunhyuk/inception-v3-cifar10/blob/master/LICENSE)
